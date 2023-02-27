@@ -57,6 +57,7 @@ public class ModBlocks {
             .setBlockName(References.RESOURCESPREFIX + "chaosShardAtmos")
             .setBlockTextureName(References.RESOURCESPREFIX + "transparency");
 
+    public static BlockDE dislocatorSuppressor;
     public static ItemStack resurrectionStone;
 
     public static void init() {
@@ -106,6 +107,7 @@ public class ModBlocks {
         }
 
         resurrectionStone = new ItemStack(ModBlocks.draconiumBlock, 1, 1);
+        dislocatorSuppressor = new DislocatorSuppressor();
     }
 
     public static void register(BlockDE block) {
