@@ -1,14 +1,15 @@
 package com.brandon3055.draconicevolution.common.utills;
 
-import com.google.common.collect.AbstractIterator;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import com.google.common.collect.AbstractIterator;
 
 public class BlockPosition {
 
@@ -34,60 +35,70 @@ public class BlockPosition {
         this.Z = tileEntity.zCoord;
     }
 
-    public int getX() { return this.X; }
+    public int getX() {
+        return this.X;
+    }
 
-    public int getY() { return this.Y; }
+    public int getY() {
+        return this.Y;
+    }
 
-    public int getZ() { return this.Z; }
+    public int getZ() {
+        return this.Z;
+    }
 
-    public String getBlockUnLocName(World world){
+    public String getBlockUnLocName(World world) {
         return world.getBlock(this.X, this.Y, this.Z).getUnlocalizedName();
     }
 
-    public HashMap<BlockPosition, String> debugMatchingArea(World world, Iterable<BlockPosition> iterable){
+    public HashMap<BlockPosition, String> debugMatchingArea(World world, Iterable<BlockPosition> iterable) {
         HashMap<BlockPosition, String> blocksInArea = new HashMap<>();
         iterable.forEach(i -> blocksInArea.put(i, i.getBlockUnLocName(world)));
         return blocksInArea;
     }
 
-    public HashMap<BlockPosition, String> debugMatchingAreaNoAir(World world, int range){
+    public HashMap<BlockPosition, String> debugMatchingAreaNoAir(Iterable<BlockPosition> blocks, World world) {
         HashMap<BlockPosition, String> blocksInArea = new HashMap<>();
-        Iterable<BlockPosition> checkedArea = getAllInBox(
-                this.addToAll(-range), this.addToAll(range));
-        checkedArea.forEach(i -> {
-            if (!i.getBlockUnLocName(world).equals("tile.air"))
+        blocks.forEach(i -> {
+            if (!i.getBlockUnLocName(world).equals("tile.air") || !i.getBlockUnLocName(world).equals("tile.grass")
+                    || !i.getBlockUnLocName(world).equals("tile.bedrock"))
                 blocksInArea.put(i, i.getBlockUnLocName(world));
         });
         return blocksInArea;
     }
 
-    public List<BlockPosition> CheckedArea(Iterable<BlockPosition> iterable){
+    public List<BlockPosition> checkedArea(Iterable<BlockPosition> iterable) {
         List<BlockPosition> returned = new ArrayList<>();
         iterable.forEach(returned::add);
 
         return returned;
     }
 
-    public BlockPosition addToAll(int in){
-        return in == 0 ?
-                this:
-                new BlockPosition(this.getX() + in, this.getY() + in, this.getZ() + in);
+    public BlockPosition addToAll(int in) {
+        return in == 0 ? this : new BlockPosition(this.getX() + in, this.getY() + in, this.getZ() + in);
     }
 
-    public BlockPosition add(int x, int y, int z){
-        return x == 0 && y == 0 && z == 0 ?
-                this :
-                new BlockPosition(this.getX() + x, this.getY() + y, this.getZ() + z);
+    public BlockPosition add(int x, int y, int z) {
+        return x == 0 && y == 0 && z == 0 ? this : new BlockPosition(this.getX() + x, this.getY() + y, this.getZ() + z);
     }
 
     public static Iterable<BlockPosition> getAllInBox(BlockPosition from, BlockPosition to) {
-        return getAllInBox(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+        return getAllInBox(
+                Math.min(from.getX(), to.getX()),
+                Math.min(from.getY(), to.getY()),
+                Math.min(from.getZ(), to.getZ()),
+                Math.max(from.getX(), to.getX()),
+                Math.max(from.getY(), to.getY()),
+                Math.max(from.getZ(), to.getZ()));
     }
 
-    public static Iterable<BlockPosition> getAllInBox(final int x1, final int y1, final int z1, final int x2, final int y2, final int z2) {
+    public static Iterable<BlockPosition> getAllInBox(final int x1, final int y1, final int z1, final int x2,
+            final int y2, final int z2) {
         return new Iterable<BlockPosition>() {
+
             public Iterator<BlockPosition> iterator() {
                 return new AbstractIterator<BlockPosition>() {
+
                     private boolean first = true;
                     private int lastPosX;
                     private int lastPosY;
@@ -101,7 +112,7 @@ public class BlockPosition {
                             this.lastPosZ = z1;
                             return new BlockPosition(x1, y1, z1);
                         } else if (this.lastPosX == x2 && this.lastPosY == y2 && this.lastPosZ == z2) {
-                            return (BlockPosition)this.endOfData();
+                            return (BlockPosition) this.endOfData();
                         } else {
                             if (this.lastPosX < x2) {
                                 ++this.lastPosX;
@@ -120,5 +131,14 @@ public class BlockPosition {
                 };
             }
         };
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BlockPosition) {
+            BlockPosition tested = (BlockPosition) obj;
+            return this.X == tested.X && this.Y == tested.Y && this.Z == tested.Z;
+        }
+        return false;
     }
 }

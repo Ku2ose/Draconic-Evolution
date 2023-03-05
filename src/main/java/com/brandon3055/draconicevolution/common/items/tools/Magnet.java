@@ -1,9 +1,10 @@
 package com.brandon3055.draconicevolution.common.items.tools;
 
+import static com.brandon3055.draconicevolution.DraconicEvolution.isBotaniaLoaded;
+import static com.brandon3055.draconicevolution.common.blocks.DislocatorSuppressor.suppressor_range;
+
 import java.util.List;
 
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.utills.BlockPosition;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -19,13 +20,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 
+import vazkii.botania.common.block.subtile.functional.SubTileSolegnolia;
+
 import com.brandon3055.brandonscore.common.utills.InfoHelper;
 import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utills.BlockPosition;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,24 +111,30 @@ public class Magnet extends ItemDE {
                 String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
                 if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
                         && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
-                        || ConfigHandler.itemDislocatorBlacklistMap.get(name)
-                        == item.getEntityItem().getItemDamage())) {
+                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                                        == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
 
                 // TODO: add here the anti-magnetizaton code
-                BlockPosition itemPosition = new BlockPosition((int)item.posX, (int)item.posY, (int)item.posZ);
                 boolean blocked = false;
 
-                // TODO: make this range checked configurable in config file end retrieve it
-                int suppressorRange = 4;
-                //Iterable<BlockPosition> checkedArea = BlockPosition.getAllInBox(
-                //        itemPosition.add(-4, -4, -4), itemPosition.add(4, 4, 4));
+                // Solegnolia from Botania disables the magnet attraction
+                if (isBotaniaLoaded && SubTileSolegnolia.hasSolegnoliaAround(item)) {
+                    continue;
+                }
 
-                Iterable<BlockPosition> checkedArea = BlockPosition.getAllInBox(
-                        itemPosition.addToAll(-suppressorRange), itemPosition.addToAll(suppressorRange));
+                BlockPosition itemPosition = new BlockPosition((int) item.posX, (int) item.posY, (int) item.posZ);
 
-                //HashMap<BlockPosition, String> lBlocksInRange = itemPosition.debugMatchingAreaNoAir(world, suppressorRange);
+                // int suppressorRange = 4;
+                // Iterable<BlockPosition> checkedArea = BlockPosition.getAllInBox(
+                // itemPosition.add(-4, -4, -4), itemPosition.add(4, 4, 4));
+
+                Iterable<BlockPosition> checkedArea = BlockPosition
+                        .getAllInBox(itemPosition.addToAll(-suppressor_range), itemPosition.addToAll(suppressor_range));
+
+                // HashMap<BlockPosition, String> lBlocksInRange = itemPosition.debugMatchingAreaNoAir(checkedArea,
+                // world);
 
                 for (BlockPosition checkPosition : checkedArea) {
                     if (world.getBlock(checkPosition.getX(), checkPosition.getY(), checkPosition.getZ())

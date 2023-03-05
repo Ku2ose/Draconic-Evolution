@@ -558,6 +558,18 @@ public class CraftingHandler {
                 'R',
                 Blocks.redstone_block);
 
+        addOre(
+                ModBlocks.dislocatorSuppressor,
+                "BIB",
+                "IMI",
+                "BIB",
+                'B',
+                "blockIron",
+                'I',
+                Blocks.iron_bars,
+                'M',
+                ModItems.magnet);
+
         if (DREAMCRAFT_NOT_PRESENT) {
             addOre(
                     ModBlocks.rainSensor,
