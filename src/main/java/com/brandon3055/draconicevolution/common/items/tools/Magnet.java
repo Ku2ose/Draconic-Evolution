@@ -28,9 +28,11 @@ import com.brandon3055.draconicevolution.common.lib.References;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import vazkii.botania.common.block.subtile.functional.SubTileSolegnolia;
 
 /**
  * Created by brandon3055 on 9/3/2016.
@@ -41,6 +43,8 @@ public class Magnet extends ItemDE implements IBauble {
 
     private IIcon draconium;
     private IIcon awakened;
+
+    private static final boolean IS_BOTANIA_LOADED = Loader.isModLoaded("Botania");
 
     public Magnet() {
         this.setUnlocalizedName("magnet");
@@ -114,6 +118,11 @@ public class Magnet extends ItemDE implements IBauble {
                                         == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
+
+                if (IS_BOTANIA_LOADED && SubTileSolegnolia.hasSolegnoliaAround(item)) {
+                    continue;
+                }
+
                 playSound = true;
 
                 if (item.delayBeforeCanPickup > 0) {
